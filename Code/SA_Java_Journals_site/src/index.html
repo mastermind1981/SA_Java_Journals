@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>title test ko</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700">
+        <link rel="stylesheet" href="css/bootstrap.css"/>
+        <link rel="stylesheet" href="css/bootstrap-theme.css"/>
+		<link rel="icon" href="img/favicon.png">
+
+		<script src="app/require.config.js"></script>
+		<script data-main="app/startup" src="lib/require.js"></script>
+	</head>
+	<body>
+
+		<div class="container theme-showcase" role="main">
+			<!--<nav-bar params="route: route"></nav-bar>-->
+			<main-menu params="routerObj: routerObj"></main-menu>
+			<div id="page" class="container" data-bind="component: { name: routerObj.currentRoute().page, params: routerObj.currentRoute }"></div>
+		</div>
+	</body>
+</html>
