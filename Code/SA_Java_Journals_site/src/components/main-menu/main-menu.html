@@ -12,9 +12,11 @@
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav" data-bind="foreach: routerObj.routesArr">
+				<!-- ko if: $data.params.inMainMenu -->
 				<li data-bind="css: { active: $parent.routerObj.currentRoute().page === $data.params.page }">
 					<a data-bind="attr: {href: '#' + $data.url}, text: $data.params.label"></a>
 				</li>
+				<!-- /ko -->
 			</ul>
 		</div><!-- /.navbar-collapse -->
 	</div><!-- /.container-fluid -->

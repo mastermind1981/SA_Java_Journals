@@ -20,6 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -48,7 +49,6 @@ public class JournalPublication implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
 	private Date publicationDate;
 	@Basic(optional = false)
-    @NotNull
     @Lob
     @Column(name = "content")
 	private byte[] content;
@@ -103,6 +103,7 @@ public class JournalPublication implements Serializable {
 		return description;
 	}
 
+	@XmlElement(nillable = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}

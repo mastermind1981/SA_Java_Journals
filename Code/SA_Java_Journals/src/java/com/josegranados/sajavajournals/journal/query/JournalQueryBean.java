@@ -89,6 +89,15 @@ public class JournalQueryBean {
 	}
 	
 	/**
+	 * Method to get a journal publication using the id
+	 * @param id
+	 * @return the jurnal or null
+	 */
+	public JournalPublication getJournalPublicationById(final int id) {
+		return em.find(JournalPublication.class, id);
+	}
+	
+	/**
 	 * Method to search the journal publications of a journal
 	 * @param journal
 	 * @param publicationDateIni

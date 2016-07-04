@@ -8,11 +8,13 @@ package com.josegranados.sajavajournals.journal.resource;
 import com.josegranados.sajavajournals.journal.model.Journal;
 import com.josegranados.sajavajournals.journal.query.JournalQueryBean;
 import com.josegranados.sajavajournals.journal.service.JournalService;
+import com.josegranados.sajavajournals.user.model.User;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
@@ -23,6 +25,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -33,7 +36,7 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
-@RolesAllowed("PUBLISHER")
+//@RolesAllowed("PUBLISHER")
 public class JournalResource {
 
 	@Context
@@ -44,22 +47,38 @@ public class JournalResource {
 	@EJB
 	JournalService journalServiceBean;
 	
+	@Context
+    SecurityContext securityContext;
+	
 	@PUT
     @Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void updateJournal(@PathParam("id") Integer id, Journal journal) {
-		journalServiceBean.updateJournal(journal);
+	public Journal updateJournal(@PathParam("id") Integer id, Journal journal) {
+		return journalServiceBean.updateJournal(journal);
 	}
 	
 	@POST
-    @Path("/new/{id}")
-	public void addJournal(@PathParam("id") Integer id, Journal newJournal) {
-		journalServiceBean.createJournal(newJournal);
+    @Path("add")
+	public Journal addJournal(Journal newJournal) {
+		return journalServiceBean.createJournal(newJournal);
 	}
 
 	@GET
-    @Path("searchjournals")
-	public List<Journal> searchJournals(@QueryParam("journalName") String journalName, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile) {
-		return journalQueryBean.searchJournals(journalName, tags, ownerProfile);
+    @Path("search")
+	public List<Journal> searchJournals(@QueryParam("name") String name, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile) {
+		System.out.println("securityContext.getUserPrincipal() " + securityContext.getUserPrincipal());
+		return journalQueryBean.searchJournals(name, tags, ownerProfile);
+	}
+	
+	@DELETE
+    @Path("{id}")
+	public void remove(@PathParam("id") Integer id) {
+		journalServiceBean.deleteJournal(id);
+	}
+	
+	@GET
+    @Path("{id}")
+	public Journal find(@PathParam("id") Integer id) {
+		return journalQueryBean.getJournalById(id);
 	}
 }

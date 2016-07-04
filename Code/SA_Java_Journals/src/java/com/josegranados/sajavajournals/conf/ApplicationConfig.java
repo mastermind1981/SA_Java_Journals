@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.josegranados.sajavajournals.conf;
 
 import java.util.Set;
@@ -28,12 +22,11 @@ public class ApplicationConfig extends Application {
 	}
 
 	/**
-	 * Do not modify addRestResourceClasses() method.
-	 * It is automatically populated with
-	 * all resources defined in the project.
-	 * If required, comment out calling this method in getClasses().
+	 * Register the resources
 	 */
 	private void addRestResourceClasses(Set<Class<?>> resources) {
+		resources.add(com.josegranados.sajavajournals.conf.CrossOriginResourceSharingFilter.class);
+		resources.add(com.josegranados.sajavajournals.journal.resource.JournalPublicationResource.class);
 		resources.add(com.josegranados.sajavajournals.journal.resource.JournalResource.class);
 	}
 

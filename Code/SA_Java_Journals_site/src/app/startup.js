@@ -4,6 +4,7 @@ define(['jquery', 'knockout', './router', 'bootstrap', 'knockout-projections'], 
   ko.components.register('main-menu', { require: 'components/main-menu/main-menu' });
   ko.components.register('home-view', { require: 'views/home-view/home-view' });
   ko.components.register('journals-view', { require: 'views/journals-view/journals-view' });
+  ko.components.register('journal-publications-view', { require: 'views/journal-publications-view/journal-publications-view' });
 
   ko.components.register('about-page', {
     template: { require: 'text!components/about-page/about.html' }

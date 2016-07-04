@@ -31,18 +31,25 @@
 				<th>About</th>
 				<th>Owner</th>
 				<th>Is Active</th>
+				<th>Publications</th>
 				<th>Edit</th>
 				<th>Delete</th>
 			</tr>
 		</thead>
 		<tbody data-bind="foreach: journals">
-			<tr  data-bind="click: $root.selectJournal">
+			<tr>
 				<td data-bind="text: idJournal"></td>
 				<td data-bind="text: name"></td>
 				<td data-bind="text: tags"></td>
 				<td data-bind="text: about"></td>
 				<td data-bind="text: ownerProfile.firstName + ' ' + ownerProfile.lastName"></td>
 				<td data-bind="text: active"></td>
+				<td>
+					<p data-placement="top" data-toggle="tooltip" title="Publications">
+						<span data-bind="text: publicationsCount"></span>
+						<a class="btn btn-primary btn-xs" data-title="Open" data-bind="attr: {href: '#journals/' + idJournal + '/publications'}"><span class="glyphicon glyphicon-folder-open"></span></a>
+					</p>
+				</td>
 				<td>
 					<p data-placement="top" data-toggle="tooltip" title="Edit">
 						<button type="button" class="btn btn-primary btn-xs" data-title="Edit" data-bind="click: function(data) {$parent.openEditJournalModal(data);}">

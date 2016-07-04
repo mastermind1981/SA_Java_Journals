@@ -1,4 +1,4 @@
-define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html", "knockout-mapping"], function (ko, Journal, APP, journalsTemplate, komapping) {
+define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"], function (ko, APP, journalsTemplate, komapping) {
 
   var JournalSearchCriterias = function () {
     var self = this;
@@ -24,7 +24,7 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
    */
   JournalViewModel.prototype.doSearch = function () {
     var self = this;
-    $.getJSON(APP.SERVER + APP.REST_PATH + 'journal/searchjournals',
+    $.getJSON(APP.SERVER + APP.REST_PATH + 'journal/search',
       ko.toJS(this.searchCriterias),
       function (data) {
         komapping.fromJS(data, self.journalMappings, self.journals);
@@ -64,8 +64,7 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
         contentType: 'application/json',
         dataType: 'json'
       }).done(function () {
-        self.currentJournal({});
-        self.journalSelected = false;
+        self.resetSelection();
         $('#edit').modal('hide');
       });
     } else {
@@ -80,8 +79,7 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
         var currentUpdated;
         komapping.fromJS(updatedJournal, self.journalMappings, currentUpdated);
         self.journals.replace(self.currentJournal, currentUpdated);
-        self.currentJournal({});
-        self.journalSelected = false;
+        self.resetSelection();
         $('#edit').modal('hide');
         self.doSearch();
       });
@@ -100,8 +98,7 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
         url: APP.SERVER + APP.REST_PATH + 'journal/' + journalId
       }).done(function () {
         self.journals.remove(self.currentJournal());
-        self.currentJournal({});
-        self.journalSelected = false;
+        self.resetSelection();
         $('#delete').modal('hide');
       });
     }
@@ -112,8 +109,7 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
    */
   JournalViewModel.prototype.openNewJournalModal = function () {
     var self = this;
-    self.currentJournal({});
-    self.journalSelected = false;
+    self.resetSelection();
     self.modalTitle("New journal");
     $('#edit').modal('show');
   };
@@ -128,6 +124,15 @@ define(["knockout", "models/JournalModel", "app/app", "text!./journals-view.html
     self.modalTitle("Edit the journal");
     self.selectJournalToEdit(journal);
     $('#edit').modal('show');
+  };
+  
+  /**
+   * Method to reset the selection
+   */
+  JournalViewModel.prototype.resetSelection = function () {
+    var self = this;
+    self.currentJournal({});
+    self.journalSelected = false;
   };
 
   return {viewModel: JournalViewModel, template: journalsTemplate};

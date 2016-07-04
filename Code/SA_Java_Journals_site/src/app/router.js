@@ -2,9 +2,10 @@ define(["knockout", "crossroads", "hasher"], function (ko, crossroads, hasher) {
  
   return new Router({
     routes: [
-      {url: '', params: {page: 'home-view', label: 'Home'}},
-      {url: 'journals', params: {page: 'journals-view', label: 'Journals'}},
-      {url: 'subscriptions', params: {page: 'subscriptions-view', label: 'Subscriptions'}}
+      {url: '', params: {page: 'home-view', label: 'Home', inMainMenu: true}},
+      {url: 'journals', params: {page: 'journals-view', label: 'Journals', inMainMenu: true}},
+      {url: 'journals/{idJournal}/publications', params: {page: 'journal-publications-view', label: 'Journal Publications', inMainMenu: false}},
+      {url: 'subscriptions', params: {page: 'subscriptions-view', label: 'Subscriptions', inMainMenu: true}}
     ]
   });
 

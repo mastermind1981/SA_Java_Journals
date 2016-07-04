@@ -2,7 +2,9 @@ package com.josegranados.sajavajournals.journal.model;
 
 import com.josegranados.sajavajournals.user.model.Profile;
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,14 +16,19 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * SA_Java_Journals
- * @author jose - 02.07.2016 
+ *
+ * @author jose - 02.07.2016
  * @Title: Journal
  * @Description: description
  *
@@ -35,28 +42,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Journal implements Serializable {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "idJournal")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
+	@Column(name = "idJournal")
 	private Integer idJournal;
 	@Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "name")
+	@NotNull
+	@Size(min = 1, max = 45)
+	@Column(name = "name")
 	private String name;
 	@Size(max = 200)
-    @Column(name = "about")
+	@Column(name = "about")
 	private String about;
 	@Lob
-    @Column(name = "image")
+	@Column(name = "image")
 	private byte[] image;
 	@Size(max = 200)
-    @Column(name = "tags")
+	@Column(name = "tags")
 	private String tags;
+	@Basic(optional = false)
+	@NotNull
+	@Column(name = "active")
+	private boolean active;
 	@JoinColumn(name = "owner_profile", referencedColumnName = "idProfile")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Profile ownerProfile;
-	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "journal", orphanRemoval = true)
+	private Collection<JournalPublication> journalPublicationsCollection;
+
 	public Journal() {
 	}
 
@@ -85,6 +98,7 @@ public class Journal implements Serializable {
 		this.name = name;
 	}
 
+	@XmlElement(nillable = true)
 	public String getAbout() {
 		return about;
 	}
@@ -101,6 +115,7 @@ public class Journal implements Serializable {
 		this.image = image;
 	}
 
+	@XmlElement(nillable = true)
 	public String getTags() {
 		return tags;
 	}
@@ -109,12 +124,38 @@ public class Journal implements Serializable {
 		this.tags = tags;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public Profile getOwnerProfile() {
 		return ownerProfile;
 	}
 
 	public void setOwnerProfile(Profile ownerProfile) {
 		this.ownerProfile = ownerProfile;
+	}
+
+	@XmlTransient
+	public Collection<JournalPublication> getJournalPublicationsCollection() {
+		return journalPublicationsCollection;
+	}
+
+	public void setJournalPublicationsCollection(Collection<JournalPublication> journalPublicationsCollection) {
+		this.journalPublicationsCollection = journalPublicationsCollection;
+	}
+
+	@XmlElement(nillable = true)
+	public Integer getPublicationsCount() {
+		if (this.journalPublicationsCollection != null) {
+			return journalPublicationsCollection.size();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
