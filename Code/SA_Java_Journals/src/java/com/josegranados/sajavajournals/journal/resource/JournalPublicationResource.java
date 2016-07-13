@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.josegranados.sajavajournals.journal.resource;
 
-import com.josegranados.sajavajournals.journal.model.Journal;
 import com.josegranados.sajavajournals.journal.model.JournalPublication;
 import com.josegranados.sajavajournals.journal.query.JournalQueryBean;
 import com.josegranados.sajavajournals.journal.service.JournalService;
@@ -14,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -42,7 +37,7 @@ import javax.ws.rs.core.SecurityContext;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
-//@RolesAllowed("PUBLISHER")
+@RolesAllowed("PUBLISHER")
 public class JournalPublicationResource {
 
 	private static final Logger LOG = Logger.getLogger(JournalPublicationResource.class.getName());
@@ -69,6 +64,7 @@ public class JournalPublicationResource {
 
 	@GET
 	@Path("search")
+	@RolesAllowed({"PUBLISHER","PUBLIC"})
 	public List<JournalPublication> searchJournalPublications(@QueryParam("idJournal") Integer idJournal, @QueryParam("dateIni") String dateIniStr, @QueryParam("dateEnd") String dateEndStr) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date dateIni;
@@ -103,6 +99,7 @@ public class JournalPublicationResource {
 
 	@GET
 	@Path("{id}")
+	@RolesAllowed({"PUBLISHER","PUBLIC"})
 	public JournalPublication find(@PathParam("id") Integer id) {
 		return journalQueryBean.getJournalPublicationById(id);
 	}

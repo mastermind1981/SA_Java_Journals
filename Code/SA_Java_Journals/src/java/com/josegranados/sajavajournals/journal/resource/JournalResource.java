@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.josegranados.sajavajournals.journal.resource;
 
 import com.josegranados.sajavajournals.journal.model.Journal;
 import com.josegranados.sajavajournals.journal.query.JournalQueryBean;
 import com.josegranados.sajavajournals.journal.service.JournalService;
-import com.josegranados.sajavajournals.user.model.User;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -28,15 +22,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 /**
- * REST Web Service
+ * SA_Java_Journals
  *
- * @author jose
+ * @author jose - 03.07.2016
+ * @Title: JournalResource
+ * @Description: description
+ *
+ * Changes History
  */
 @Path("journal")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
-//@RolesAllowed("PUBLISHER")
+@RolesAllowed("PUBLISHER")
 public class JournalResource {
 
 	@Context
@@ -52,7 +50,6 @@ public class JournalResource {
 	
 	@PUT
     @Path("{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	public Journal updateJournal(@PathParam("id") Integer id, Journal journal) {
 		return journalServiceBean.updateJournal(journal);
 	}
@@ -65,9 +62,9 @@ public class JournalResource {
 
 	@GET
     @Path("search")
-	public List<Journal> searchJournals(@QueryParam("name") String name, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile) {
-		System.out.println("securityContext.getUserPrincipal() " + securityContext.getUserPrincipal());
-		return journalQueryBean.searchJournals(name, tags, ownerProfile);
+	@RolesAllowed({"PUBLISHER","PUBLIC"})
+	public List<Journal> searchJournals(@QueryParam("name") String name, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile, @QueryParam("active") Boolean active) {
+		return journalQueryBean.searchJournals(name, tags, ownerProfile, active);
 	}
 	
 	@DELETE
@@ -78,7 +75,10 @@ public class JournalResource {
 	
 	@GET
     @Path("{id}")
+	@RolesAllowed({"PUBLISHER","PUBLIC"})
 	public Journal find(@PathParam("id") Integer id) {
 		return journalQueryBean.getJournalById(id);
 	}
+	
+	
 }

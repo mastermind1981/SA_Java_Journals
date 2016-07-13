@@ -1,21 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.josegranados.sajavajournals.journal.service;
 
+import com.josegranados.sajavajournals.authentication.service.AuthenticationService;
 import com.josegranados.sajavajournals.journal.model.Journal;
 import com.josegranados.sajavajournals.journal.model.JournalPublication;
 import com.josegranados.sajavajournals.user.model.User;
 import java.util.Date;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 
 /**
  * SA_Java_Journals
@@ -33,8 +27,8 @@ public class JournalService {
 	@PersistenceContext(unitName = "SA_Java_JournalsPU")
 	private EntityManager em;
 	
-	@Context
-    SecurityContext securityContext;
+	@EJB
+	AuthenticationService authenticationService;
 	
 	/**
 	 * Method to create a new journal
@@ -42,10 +36,7 @@ public class JournalService {
 	 * @return the created journal
 	 */
 	public Journal createJournal(Journal newJournal) {
-		//TODO User creator = (User) securityContext.getUserPrincipal();
-		User creator = em.find(User.class, 1);
-		System.out.println("----------- user + " + creator);
-		creator = em.find(User.class, creator.getIdUser());
+		User creator = authenticationService.getAuthenticatedUser();
 		newJournal.setOwnerProfile(creator.getProfile());
 		newJournal.setActive(true);
 		em.persist(newJournal);
@@ -81,9 +72,7 @@ public class JournalService {
 	 * @return the created journal publication
 	 */
 	public JournalPublication createJournalPublication(JournalPublication newJournalPublication) {
-		//TODO User creator = (User) securityContext.getUserPrincipal();
-		User creator = em.find(User.class, 1);
-		creator = em.find(User.class, creator.getIdUser());
+		User creator = authenticationService.getAuthenticatedUser();
 		Journal parentJournal = em.find(Journal.class, newJournalPublication.getIdJournalPublication());
 		newJournalPublication.setJournal(parentJournal);
 		newJournalPublication.setPublisherProfile(creator.getProfile());

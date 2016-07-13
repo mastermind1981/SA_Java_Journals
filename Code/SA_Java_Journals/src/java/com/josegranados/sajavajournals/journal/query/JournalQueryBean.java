@@ -51,9 +51,10 @@ public class JournalQueryBean {
 	 * @param name
 	 * @param tags
 	 * @param ownerProfile 
+	 * @param active 
 	 * @return List with the journals
 	 */
-	public List<Journal> searchJournals(final String name, final String tags, final Integer ownerProfile) {
+	public List<Journal> searchJournals(final String name, final String tags, final Integer ownerProfile, final Boolean active) {
 		CriteriaBuilder journalsBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Journal> query = journalsBuilder.createQuery(Journal.class);
 		Root<Journal> journalsRoot = query.from(Journal.class);
@@ -61,7 +62,7 @@ public class JournalQueryBean {
 		
 		List<Predicate> predicateList = new ArrayList<>();
 
-		Predicate namePredicate, tagsPredicate, ownerProfilePredicate;
+		Predicate namePredicate, tagsPredicate, ownerProfilePredicate, activePredicate;
 
 		if (name != null && !(name.isEmpty())) {
 			namePredicate = journalsBuilder.like(
@@ -77,8 +78,13 @@ public class JournalQueryBean {
 		
 		//TODO check this
 		if (ownerProfile != null && ownerProfile > 0) {
-			tagsPredicate = journalsBuilder.equal(journalsRoot.get(Journal_.ownerProfile), em.find(Profile.class, ownerProfile));
-			predicateList.add(tagsPredicate);
+			ownerProfilePredicate = journalsBuilder.equal(journalsRoot.get(Journal_.ownerProfile), em.find(Profile.class, ownerProfile));
+			predicateList.add(ownerProfilePredicate);
+		}
+		
+		if (active != null) {
+			activePredicate = journalsBuilder.equal(journalsRoot.get(Journal_.active), active);
+			predicateList.add(activePredicate);
 		}
 		
 		Predicate[] predicates = new Predicate[predicateList.size()];

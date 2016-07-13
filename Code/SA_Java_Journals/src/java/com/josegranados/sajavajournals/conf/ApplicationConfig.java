@@ -25,9 +25,11 @@ public class ApplicationConfig extends Application {
 	 * Register the resources
 	 */
 	private void addRestResourceClasses(Set<Class<?>> resources) {
+		resources.add(com.josegranados.sajavajournals.authentication.resource.AuthenticationResource.class);
 		resources.add(com.josegranados.sajavajournals.conf.CrossOriginResourceSharingFilter.class);
 		resources.add(com.josegranados.sajavajournals.journal.resource.JournalPublicationResource.class);
 		resources.add(com.josegranados.sajavajournals.journal.resource.JournalResource.class);
+		resources.add(com.josegranados.sajavajournals.subscription.resource.SubscriptionResource.class);
 	}
 
 }

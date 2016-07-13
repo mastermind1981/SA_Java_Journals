@@ -5,6 +5,10 @@
     <role-name>PUBLISHER</role-name>
     <group-name>PUBLISHER</group-name>
   </security-role-mapping>
+  <security-role-mapping>
+    <role-name>PUBLIC</role-name>
+    <group-name>PUBLIC</group-name>
+  </security-role-mapping>
   <class-loader delegate="true"/>
   <jsp-config>
     <property name="keepgenerated" value="true">

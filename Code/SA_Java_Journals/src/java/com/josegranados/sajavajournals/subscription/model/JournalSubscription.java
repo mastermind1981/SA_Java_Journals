@@ -1,7 +1,9 @@
-package com.josegranados.sajavajournals.user.model;
+package com.josegranados.sajavajournals.subscription.model;
 
 import com.josegranados.sajavajournals.journal.model.Journal;
+import com.josegranados.sajavajournals.user.model.User;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +16,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -42,6 +47,11 @@ public class JournalSubscription implements Serializable {
 	@JoinColumn(name = "journal", referencedColumnName = "idJournal")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Journal journal;
+	@Basic(optional = false)
+    @NotNull
+    @Column(name = "subscription_date")
+    @Temporal(TemporalType.TIMESTAMP)
+	private Date subscriptionDate;
 
 	public JournalSubscription() {
 	}
@@ -72,6 +82,14 @@ public class JournalSubscription implements Serializable {
 
 	public void setJournal(Journal journal) {
 		this.journal = journal;
+	}
+
+	public Date getSubscriptionDate() {
+		return subscriptionDate;
+	}
+
+	public void setSubscriptionDate(Date subscriptionDate) {
+		this.subscriptionDate = subscriptionDate;
 	}
 
 	@Override
