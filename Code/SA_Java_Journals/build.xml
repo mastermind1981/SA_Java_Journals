@@ -7,8 +7,8 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="SA_Java_Journals" default="default" basedir=".">
-    <description>Builds, tests, and runs the project SA_Java_Journals.</description>
+<project name="HRMS_" default="default" basedir=".">
+    <description>Builds, tests, and runs the project HRMS_.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
