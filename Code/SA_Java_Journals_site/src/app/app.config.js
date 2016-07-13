@@ -1,4 +1,4 @@
 define([], {
-    SERVER: 'http://localhost:8080',
+    SERVER: 'http://192.168.1.72:8080',
     REST_PATH: '/SA_Java_Journals/rest/'
 });

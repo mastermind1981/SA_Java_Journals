@@ -1,4 +1,4 @@
-define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"], function (ko, APP, journalsTemplate, komapping) {
+define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journals-view.html", "knockout-mapping"], function (ko, APP, ajaxInterceptor, journalsTemplate, komapping) {
 
   var JournalSearchCriterias = function () {
     var self = this;
@@ -7,7 +7,7 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
     self.active = ko.observable();
   };
 
-  function JournalViewModel(route) {
+  function JournalViewModel(params) {
     var self = this;
     self.journalMappings = {
       'observe': [""]
@@ -17,6 +17,7 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
     self.journalSelected = false;
     self.searchCriterias = ko.observable(new JournalSearchCriterias());
     self.modalTitle = ko.observable();
+    self.authModel = params.authModel;
   }
 
   /**
@@ -24,8 +25,8 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
    */
   JournalViewModel.prototype.doSearch = function () {
     var self = this;
-    $.getJSON(APP.SERVER + APP.REST_PATH + 'journal/search',
-      ko.toJS(this.searchCriterias),
+    ajaxInterceptor.sendAjax('GET', ko.toJS(this.searchCriterias),
+      'application/json', 'json', 'journal/search',
       function (data) {
         komapping.fromJS(data, self.journalMappings, self.journals);
       });
@@ -40,7 +41,7 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
     self.currentJournal(ko.toJS(journal));//copying to avoid changes directly in the object
     self.journalSelected = true;
   };
-  
+
   /**
    * Method to select the journal to delete
    * @param {Journal} journal
@@ -57,32 +58,25 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
   JournalViewModel.prototype.saveJournal = function () {
     var self = this;
     if (!self.journalSelected) {
-      $.ajax({
-        method: "POST",
-        url: APP.SERVER + APP.REST_PATH + 'journal/add',
-        data: ko.toJSON(self.currentJournal()),
-        contentType: 'application/json',
-        dataType: 'json'
-      }).done(function () {
-        self.resetSelection();
-        $('#edit').modal('hide');
-      });
+      ajaxInterceptor.sendAjax('POST', ko.toJSON(self.currentJournal()),
+        'application/json', 'json', 'journal/add',
+        function (data) {
+          self.resetSelection();
+          $('#edit').modal('hide');
+          self.doSearch();
+        });
     } else {
       var journalId = self.currentJournal().idJournal;
-      $.ajax({
-        method: "PUT",
-        url: APP.SERVER + APP.REST_PATH + 'journal/' + journalId,
-        data: ko.toJSON(self.currentJournal()),
-        contentType: 'application/json',
-        dataType: 'json'
-      }).done(function (updatedJournal) {
-        var currentUpdated;
-        komapping.fromJS(updatedJournal, self.journalMappings, currentUpdated);
-        self.journals.replace(self.currentJournal, currentUpdated);
-        self.resetSelection();
-        $('#edit').modal('hide');
-        self.doSearch();
-      });
+      ajaxInterceptor.sendAjax('PUT', ko.toJSON(self.currentJournal()),
+        'application/json', 'json', 'journal/' + journalId,
+        function (updatedJournal) {
+          var currentUpdated;
+          komapping.fromJS(updatedJournal, self.journalMappings, currentUpdated);
+          self.journals.replace(self.currentJournal, currentUpdated);
+          self.resetSelection();
+          $('#edit').modal('hide');
+          self.doSearch();
+        });
     }
   };
 
@@ -93,14 +87,13 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
     var self = this;
     var journalId = self.currentJournal().idJournal;
     if (self.journalSelected) {
-      $.ajax({
-        method: "DELETE",
-        url: APP.SERVER + APP.REST_PATH + 'journal/' + journalId
-      }).done(function () {
-        self.journals.remove(self.currentJournal());
-        self.resetSelection();
-        $('#delete').modal('hide');
-      });
+      ajaxInterceptor.sendAjax('DELETE', null,
+        'application/json', 'json', 'journal/' + journalId,
+        function () {
+          self.journals.remove(self.currentJournal());
+          self.resetSelection();
+          $('#delete').modal('hide');
+        });
     }
   };
 
@@ -125,7 +118,7 @@ define(["knockout", "app/app", "text!./journals-view.html", "knockout-mapping"],
     self.selectJournalToEdit(journal);
     $('#edit').modal('show');
   };
-  
+
   /**
    * Method to reset the selection
    */

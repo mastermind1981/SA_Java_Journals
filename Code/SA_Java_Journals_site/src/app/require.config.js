@@ -10,14 +10,14 @@ var require = {
 		"knockout": "lib/knockout/knockout.min",
 		"knockout-mapping": "lib/knockout/knockout.mapping.min",
 		"knockout-projections": "lib/knockout/knockout-projections.min",
-		"text": "lib/requirejs-text"
+		"text": "lib/requirejs-text",
+		"shalib": "lib/sha256.min",
+		"base64": "lib/base64.min",
+		"growl": "lib/jquery.bootstrap-growl.min"
+    
 	},
 	shim: {
-		"bootstrap": {deps: ["jquery"]}
-	},
-	config: {
-		'dat': {
-			SERVER: 'http://localhost:8080'
-		}
+		"bootstrap": {deps: ["jquery"]},
+		"growl": {deps: ["jquery"]}
 	}
 };

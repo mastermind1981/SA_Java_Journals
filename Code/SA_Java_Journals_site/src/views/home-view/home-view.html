@@ -1,5 +1,29 @@
-<h2>Home</h2>
-
-<p data-bind='text: message'></p>
-
-<button data-bind='click: doSomething'>Click me</button>
+<h2>SA Java Journal</h2>
+<!-- ko ifnot: authModel.success -->
+<form class="form-horizontal" data-bind="submit: doLogin">
+	<fieldset class="center-block">
+		<legend>Login</legend>
+		<div class="row">
+			<div class="form-group col-sm-4">
+				<label class="sr-only" for="name">User Name:</label>
+				<input type="text" class="form-control" id="name" placeholder="Journal Name" data-bind="textInput: loginData().userName"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group  col-sm-4">
+				<label class="sr-only" for="tag">Password:</label>
+				<input type="password" class="form-control" id="tag" placeholder="Tag" data-bind="textInput: loginData().userPassword"/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Login</button>
+			</div>
+		</div>
+	</fieldset>
+</form>
+<!-- /ko -->
+<!-- ko if: authModel.success -->
+<h2>Welcome</h2>
+<button type="button" class="btn btn-primary">Log out</button>
+<!-- /ko -->

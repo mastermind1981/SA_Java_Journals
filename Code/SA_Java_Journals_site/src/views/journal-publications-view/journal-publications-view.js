@@ -1,4 +1,4 @@
-define(["knockout", "app/app", "text!./journal-publications-view.html", "knockout-mapping"], function (ko, APP, journalPublicationsTemplate, komapping) {
+define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-publications-view.html", "knockout-mapping"], function (ko, APP, ajaxInterceptor, journalPublicationsTemplate, komapping) {
 
   var publicationSearchCriterias = function () {
     var self = this;
@@ -7,20 +7,21 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
     self.dateEnd = ko.observable();
   };
 
-  function JournalPublicationsViewModel(route) {
+  function JournalPublicationsViewModel(params) {
     var self = this;
     self.publicationMappings = {
       'observe': [""]
     };
-    self.idJournal = route.idJournal;
+    self.authModel = params.authModel;
+    self.idJournal = params.router.currentRoute().idJournal;
     self.journalPublications = ko.observableArray([]);
     self.currentJournal = ko.observable({});
     self.currentJournalPublication = ko.observable({});
     self.journalPublicationSelected = false;
     self.searchCriterias = ko.observable(new publicationSearchCriterias());
-    
+
     self.modalTitle = ko.observable();
-    
+
     self.searchCriterias().idJournal = self.idJournal;
     self.getJournal();
   }
@@ -30,19 +31,20 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
    */
   JournalPublicationsViewModel.prototype.getJournal = function () {
     var self = this;
-    $.getJSON(APP.SERVER + APP.REST_PATH + 'journal/' + self.idJournal,
+    ajaxInterceptor.sendAjax('GET', null,
+      'application/json', 'json', 'journal/' + self.idJournal,
       function (data) {
-         self.currentJournal(komapping.fromJS(data, {}));
+        self.currentJournal(komapping.fromJS(data, {}));
       });
   };
-  
+
   /**
    * Method to search journal publicationss
    */
   JournalPublicationsViewModel.prototype.doSearch = function () {
     var self = this;
-    $.getJSON(APP.SERVER + APP.REST_PATH + 'journalpublication/search',
-      ko.toJS(this.searchCriterias),
+    ajaxInterceptor.sendAjax('GET', ko.toJS(this.searchCriterias),
+      'application/json', 'json', 'journalpublication/search',
       function (data) {
         komapping.fromJS(data, self.publicationMappings, self.journalPublications);
       });
@@ -57,7 +59,7 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
     self.currentJournalPublication(ko.toJS(journalPublication));//copying to avoid changes directly in the object
     self.journalPublicationSelected = true;
   };
-  
+
   /**
    * Method to select the journal publication to delete
    * @param {JournalPublication} journalPublication
@@ -75,32 +77,27 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
     var self = this;
     if (!self.journalPublicationSelected) {
       self.currentJournalPublication().idJournalPublication = self.idJournal;
-      $.ajax({
-        method: "POST",
-        url: APP.SERVER + APP.REST_PATH + 'journalpublication/add',
-        data: ko.toJSON(self.currentJournalPublication()),
-        contentType: 'application/json',
-        dataType: 'json'
-      }).done(function () {
-        self.resetSelection();
-        $('#edit').modal('hide');
-      });
+
+      ajaxInterceptor.sendAjax('POST', ko.toJSON(self.currentJournalPublication()),
+        'application/json', 'json', 'journalpublication/add',
+        function () {
+          self.resetSelection();
+          $('#edit').modal('hide');
+          self.doSearch();
+        });
     } else {
       var idJournalPublication = self.currentJournalPublication().idJournalPublication;
-      $.ajax({
-        method: "PUT",
-        url: APP.SERVER + APP.REST_PATH + 'journalpublication/' + idJournalPublication,
-        data: ko.toJSON(self.currentJournalPublication()),
-        contentType: 'application/json',
-        dataType: 'json'
-      }).done(function (updatedJournalPublication) {
-        var currentUpdated;
-        komapping.fromJS(updatedJournalPublication, self.publicationMappings, currentUpdated);
-        self.journalPublications.replace(self.currentJournalPublication, currentUpdated);
-        self.resetSelection();
-        $('#edit').modal('hide');
-        self.doSearch();
-      });
+
+      ajaxInterceptor.sendAjax('PUT', ko.toJSON(self.currentJournalPublication()),
+        'application/json', 'json', 'journalpublication/' + idJournalPublication,
+        function (updatedJournalPublication) {
+          var currentUpdated;
+          komapping.fromJS(updatedJournalPublication, self.publicationMappings, currentUpdated);
+          self.journalPublications.replace(self.currentJournalPublication, currentUpdated);
+          self.resetSelection();
+          $('#edit').modal('hide');
+          self.doSearch();
+        });
     }
   };
 
@@ -111,14 +108,14 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
     var self = this;
     var idJournalPublication = self.currentJournalPublication().idJournalPublication;
     if (self.journalPublicationSelected) {
-      $.ajax({
-        method: "DELETE",
-        url: APP.SERVER + APP.REST_PATH + 'journalpublication/' + idJournalPublication
-      }).done(function () {
-        self.journalPublications.remove(self.currentJournalPublication());
-        self.resetSelection();
-        $('#delete').modal('hide');
-      });
+
+      ajaxInterceptor.sendAjax('DELETE', null,
+        'application/json', 'json', 'journalpublication/' + idJournalPublication,
+        function () {
+          self.journalPublications.remove(self.currentJournalPublication());
+          self.resetSelection();
+          $('#delete').modal('hide');
+        });
     }
   };
 
@@ -143,7 +140,7 @@ define(["knockout", "app/app", "text!./journal-publications-view.html", "knockou
     self.selectJournalPublicationToEdit(journalPublication);
     $('#edit').modal('show');
   };
-  
+
   /**
    * Method to reset the selection
    */

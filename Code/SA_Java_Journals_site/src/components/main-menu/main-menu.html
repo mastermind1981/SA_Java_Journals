@@ -18,6 +18,13 @@
 				</li>
 				<!-- /ko -->
 			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<!-- ko if: authModel.success -->
+				<li>
+					<p class="navbar-text">Signed in as <span data-bind="text: authModel.userName"> </span>, <a href="#" class="navbar-link" data-bind="click: logout">logout</a></p>
+				</li>
+				<!-- /ko -->
+			</ul>
 		</div><!-- /.navbar-collapse -->
 	</div><!-- /.container-fluid -->
 </nav>

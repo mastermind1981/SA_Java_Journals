@@ -12,11 +12,9 @@
 		<script data-main="app/startup" src="lib/require.js"></script>
 	</head>
 	<body>
-
 		<div class="container theme-showcase" role="main">
-			<!--<nav-bar params="route: route"></nav-bar>-->
-			<main-menu params="routerObj: routerObj"></main-menu>
-			<div id="page" class="container" data-bind="component: { name: routerObj.currentRoute().page, params: routerObj.currentRoute }"></div>
+			<main-menu params="routerObj: routerObj, authModel: authModelObj"></main-menu>
+			<div id="page" class="container" data-bind="component: { name: routerObj.currentRoute().page, params: {router: routerObj, authModel: authModelObj }}"></div>
 		</div>
 	</body>
 </html>
