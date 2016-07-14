@@ -1,8 +1,10 @@
 #/Code/SA_Java_Journals/nbproject/private/
 /Code/SA_Java_Journals/dist/
-/Code/SA_Java_Journals/build/
+/Code/SA_Java_Journals/build/web/
+/Code/SA_Java_Journals/build/empty/
 /Code/SA_Java_Journals/lib/
-#/Code/SA_Java_Journals/nbproject/
+!/Code/SA_Java_Journals/lib/nblibraries.properties
+/Code/SA_Java_Journals/nbproject/genfiles.properties
 /SQL/JournalsSchema.mwb.bak
 *~
 /Code/SA_Java_Journals_site/nbproject/private/
