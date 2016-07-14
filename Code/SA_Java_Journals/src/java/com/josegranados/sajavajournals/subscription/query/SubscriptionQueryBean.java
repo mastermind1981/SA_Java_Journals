@@ -57,7 +57,6 @@ public class SubscriptionQueryBean {
 			predicateList.add(subscriptionDatePredicate);
 		}
 
-		//TODO check this
 		User currentUser = authenticationService.getAuthenticatedUser();
 		subscriberPredicate = journalSubscriptionBuilder.equal(journalSubscriptionRoot.get(JournalSubscription_.user), em.find(User.class, currentUser.getIdUser()));
 		predicateList.add(subscriberPredicate);

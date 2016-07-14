@@ -13,7 +13,8 @@ import javax.persistence.PersistenceContext;
 
 /**
  * SA_Java_Journals
- * @author jose - 02.07.2016 
+ *
+ * @author jose - 02.07.2016
  * @Title: JournalService
  * @Description: description
  *
@@ -23,15 +24,16 @@ import javax.persistence.PersistenceContext;
 public class JournalService {
 
 	private static final Logger LOG = Logger.getLogger(JournalService.class.getName());
-	
+
 	@PersistenceContext(unitName = "SA_Java_JournalsPU")
 	private EntityManager em;
-	
+
 	@EJB
 	AuthenticationService authenticationService;
-	
+
 	/**
 	 * Method to create a new journal
+	 *
 	 * @param newJournal
 	 * @return the created journal
 	 */
@@ -42,9 +44,10 @@ public class JournalService {
 		em.persist(newJournal);
 		return newJournal;
 	}
-	
+
 	/**
 	 * Metod to update the information of a journal
+	 *
 	 * @param journalValues
 	 * @return the updated journal
 	 */
@@ -56,18 +59,20 @@ public class JournalService {
 		journal.setTags(journalValues.getTags());
 		return journal;
 	}
-    
+
 	/**
 	 * Method to delete the journal and its publications
-	 * @param id 
+	 *
+	 * @param id
 	 */
 	public void deleteJournal(Integer id) {
 		//journalPublications removed in cascade also
 		em.remove(em.find(Journal.class, id));
 	}
-	
+
 	/**
 	 * Method do create a new journal publication
+	 *
 	 * @param newJournalPublication
 	 * @return the created journal publication
 	 */
@@ -81,9 +86,10 @@ public class JournalService {
 		em.flush();
 		return newJournalPublication;
 	}
-	
+
 	/**
 	 * Method to update de information of a journal publication
+	 *
 	 * @param journalPublicationValues
 	 * @return the updated journal publication
 	 */
@@ -92,10 +98,11 @@ public class JournalService {
 		journalPublication.setDescription(journalPublicationValues.getDescription());
 		return journalPublication;
 	}
-    
+
 	/**
 	 * Method to delete the journal publication
-	 * @param id 
+	 *
+	 * @param id
 	 */
 	public void deleteJournalPublication(Integer id) {
 		JournalPublication journalPublication = em.find(JournalPublication.class, id);

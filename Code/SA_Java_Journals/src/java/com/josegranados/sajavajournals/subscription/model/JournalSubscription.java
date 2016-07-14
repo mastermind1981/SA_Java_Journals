@@ -23,7 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * SA_Java_Journals
- * @author jose - 02.07.2016 
+ *
+ * @author jose - 02.07.2016
  * @Title: JournalSubscription
  * @Description: description
  *
@@ -37,20 +38,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JournalSubscription implements Serializable {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "idJournalSubscription")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic(optional = false)
+	@Column(name = "idJournalSubscription")
 	private Integer idJournalSubscription;
 	@JoinColumn(name = "user", referencedColumnName = "idUser")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private User user;
 	@JoinColumn(name = "journal", referencedColumnName = "idJournal")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	private Journal journal;
 	@Basic(optional = false)
-    @NotNull
-    @Column(name = "subscription_date")
-    @Temporal(TemporalType.TIMESTAMP)
+	@NotNull
+	@Column(name = "subscription_date")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date subscriptionDate;
 
 	public JournalSubscription() {

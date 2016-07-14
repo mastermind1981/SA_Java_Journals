@@ -39,46 +39,51 @@ public class JournalResource {
 
 	@Context
 	private UriInfo context;
-	
+
 	@EJB
 	JournalQueryBean journalQueryBean;
 	@EJB
 	JournalService journalServiceBean;
-	
+
 	@Context
-    SecurityContext securityContext;
-	
+	SecurityContext securityContext;
+
 	@PUT
-    @Path("{id}")
+	@Path("{id}")
 	public Journal updateJournal(@PathParam("id") Integer id, Journal journal) {
 		return journalServiceBean.updateJournal(journal);
 	}
-	
+
 	@POST
-    @Path("add")
+	@Path("add")
 	public Journal addJournal(Journal newJournal) {
 		return journalServiceBean.createJournal(newJournal);
 	}
 
 	@GET
-    @Path("search")
-	@RolesAllowed({"PUBLISHER","PUBLIC"})
+	@Path("search")
 	public List<Journal> searchJournals(@QueryParam("name") String name, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile, @QueryParam("active") Boolean active) {
 		return journalQueryBean.searchJournals(name, tags, ownerProfile, active);
 	}
-	
+
+	@GET
+	@Path("searchforsubscription")
+	@RolesAllowed("PUBLIC")
+	public List<Journal> searchJSubscriptionAvailable(@QueryParam("name") String name, @QueryParam("tags") String tags, @QueryParam("ownerProfile") Integer ownerProfile) {
+		return journalQueryBean.searchJournalsSubscriptionAvailable(name, tags, ownerProfile);
+	}
+
 	@DELETE
-    @Path("{id}")
+	@Path("{id}")
 	public void remove(@PathParam("id") Integer id) {
 		journalServiceBean.deleteJournal(id);
 	}
-	
+
 	@GET
-    @Path("{id}")
-	@RolesAllowed({"PUBLISHER","PUBLIC"})
+	@Path("{id}")
+	@RolesAllowed({"PUBLISHER", "PUBLIC"})
 	public Journal find(@PathParam("id") Integer id) {
 		return journalQueryBean.getJournalById(id);
 	}
-	
-	
+
 }
