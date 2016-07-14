@@ -12,7 +12,6 @@ define(['jquery', 'knockout', 'knockout-mapping', './router', './authentication'
   });
 
   ko.components.register('main-menu', {require: 'components/main-menu/main-menu'});
-  ko.components.register('journals-list', {require: 'components/journals-list/journals-list'});
   // [Scaffolded component registrations will be inserted here. To retain this feature, don't remove this comment.]
 
   // Start the application
