@@ -3,10 +3,13 @@ package com.josegranados.sajavajournals.journal.resource;
 import com.josegranados.sajavajournals.journal.model.JournalPublication;
 import com.josegranados.sajavajournals.journal.query.JournalQueryBean;
 import com.josegranados.sajavajournals.journal.service.JournalService;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -20,9 +23,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * SA_Java_Journals
@@ -57,14 +66,26 @@ public class JournalPublicationResource {
 	}
 
 	@POST
-	@Path("add")
-	public JournalPublication addJournal(JournalPublication newJournalPublication) {
-		return journalServiceBean.createJournalPublication(newJournalPublication);
+	@Path("journal/{idJournal}/add")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public JournalPublication addJournalPublicationWithFile(
+			@PathParam("idJournal") Integer idJournal,
+			@FormDataParam("file") InputStream fileInputStream,
+			@FormDataParam("file") FormDataContentDisposition cdh,
+			@FormDataParam("journalPublication") FormDataBodyPart journalPublicationJSON) {
+		try {
+			journalPublicationJSON.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+			JournalPublication journalPublication = journalPublicationJSON.getEntityAs(JournalPublication.class);
+			return journalServiceBean.createJournalPublication(journalPublication, idJournal, fileInputStream, cdh.getFileName());
+		} catch (IOException ex) {
+			LOG.log(Level.SEVERE, null, ex);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 
 	@GET
 	@Path("search")
-	@RolesAllowed({"PUBLISHER","PUBLIC"})
+	@RolesAllowed({"PUBLISHER", "PUBLIC"})
 	public List<JournalPublication> searchJournalPublications(@QueryParam("idJournal") Integer idJournal, @QueryParam("dateIni") String dateIniStr, @QueryParam("dateEnd") String dateEndStr) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date dateIni;
@@ -99,8 +120,22 @@ public class JournalPublicationResource {
 
 	@GET
 	@Path("{id}")
-	@RolesAllowed({"PUBLISHER","PUBLIC"})
+	@RolesAllowed({"PUBLISHER", "PUBLIC"})
 	public JournalPublication find(@PathParam("id") Integer id) {
 		return journalQueryBean.getJournalPublicationById(id);
+	}
+
+	@GET
+	@Path("pdf/{id}")
+	@RolesAllowed({"PUBLISHER", "PUBLIC"})
+	public Response downloadPublicationFile(@PathParam("id") Integer id) {
+		JournalPublication journalPublication = journalQueryBean.getJournalPublicationById(id);
+		if (journalPublication != null && journalPublication.getContent() != null && journalPublication.getFileName() != null
+				&& !journalPublication.getFileName().trim().isEmpty()) {
+			ResponseBuilder response = Response.ok(journalPublication.getContent()).header("Content-Disposition", "attachment; filename=\"" + journalPublication.getFileName() + "\"");
+			return response.build();
+		} else {
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 }

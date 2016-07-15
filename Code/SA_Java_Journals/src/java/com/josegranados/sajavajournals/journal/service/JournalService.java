@@ -4,6 +4,12 @@ import com.josegranados.sajavajournals.authentication.service.AuthenticationServ
 import com.josegranados.sajavajournals.journal.model.Journal;
 import com.josegranados.sajavajournals.journal.model.JournalPublication;
 import com.josegranados.sajavajournals.user.model.User;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -74,14 +80,20 @@ public class JournalService {
 	 * Method do create a new journal publication
 	 *
 	 * @param newJournalPublication
+	 * @param idJournal
+	 * @param fileInputStream
+	 * @param fileName
 	 * @return the created journal publication
+	 * @throws java.io.IOException
 	 */
-	public JournalPublication createJournalPublication(JournalPublication newJournalPublication) {
+	public JournalPublication createJournalPublication(final JournalPublication newJournalPublication, final Integer idJournal, final InputStream fileInputStream, final String fileName) throws IOException {
 		User creator = authenticationService.getAuthenticatedUser();
-		Journal parentJournal = em.find(Journal.class, newJournalPublication.getIdJournalPublication());
+		Journal parentJournal = em.find(Journal.class, idJournal);
 		newJournalPublication.setJournal(parentJournal);
 		newJournalPublication.setPublisherProfile(creator.getProfile());
 		newJournalPublication.setPublicationDate(new Date());
+		newJournalPublication.setFileName(fileName);
+		newJournalPublication.setContent(toByteArray(fileInputStream));
 		parentJournal.getJournalPublicationsCollection().add(newJournalPublication);
 		em.flush();
 		return newJournalPublication;
@@ -111,4 +123,20 @@ public class JournalService {
 		em.merge(journalParent);
 	}
 
+	/**
+	 * Method to convert the file stream in byte array
+	 *
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 */
+	private byte[] toByteArray(InputStream input) throws IOException {
+		byte[] buffer = new byte[1024];
+		int bytesRead;
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		while ((bytesRead = input.read(buffer)) != -1) {
+			output.write(buffer, 0, bytesRead);
+		}
+		return output.toByteArray();
+	}
 }

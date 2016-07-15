@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * SA_Java_Journals
@@ -52,6 +53,9 @@ public class JournalPublication implements Serializable {
     @Lob
     @Column(name = "content")
 	private byte[] content;
+	@Size(max = 50)
+    @Column(name = "file_name")
+	private String fileName;
 	@Size(max = 200)
     @Column(name = "description")
 	private String description;
@@ -91,12 +95,22 @@ public class JournalPublication implements Serializable {
 		this.publicationDate = publicationDate;
 	}
 
+	@XmlTransient
 	public byte[] getContent() {
 		return content;
 	}
 
 	public void setContent(byte[] content) {
 		this.content = content;
+	}
+
+	@XmlElement(nillable = true)
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getDescription() {
