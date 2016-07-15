@@ -21,7 +21,7 @@ define(["growl", "app/app.config", "crossroads", "hasher", "app/authentication"]
           error = 403;
         }
         var modalOpen = false;
-        $('.modal').each(function() {
+        $('.modal').each(function () {
           var data = $(this).data('bs.modal');
           if (data && data.isShown) {
             modalOpen = true;
@@ -45,10 +45,10 @@ define(["growl", "app/app.config", "crossroads", "hasher", "app/authentication"]
 
 
   return {
-    sendAjax: function (method, data, contentType, dataType, restPath, doneCallback, errorCallback) {
+    sendAjax: function (method, data, contentType, dataType, restPath, doneCallback, errorCallback, fileUpload) {
       if (auth.loadUserData()) {
         var token = auth.loadUserData().token;
-        $.ajax({
+        var conf = {
           method: method,
           url: APP.SERVER + APP.REST_PATH + restPath,
           data: data,
@@ -57,7 +57,13 @@ define(["growl", "app/app.config", "crossroads", "hasher", "app/authentication"]
           beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", "Basic " + token);
           }
-        })
+        };
+        if (fileUpload) {
+          conf['cache'] = false;
+          conf['processData'] = false;// Don't process the files
+          conf['contentType'] = false;// Set content type to false as jQuery will tell the server its a query string request
+        }
+        $.ajax(conf)
           .done(doneCallback)
           .fail(errorCallback, defaultErrorCallback);
       } else {
