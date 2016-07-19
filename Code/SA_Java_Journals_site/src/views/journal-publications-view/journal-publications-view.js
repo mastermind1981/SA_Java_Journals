@@ -18,7 +18,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
     self.journalPublications = ko.observableArray([]);
     self.currentJournal = ko.observable({});
     self.currentJournalPublication = ko.observable({});
-    self.journalPublicationSelected = false;
+    self.journalPublicationSelected = ko.observable(false);
     self.searchCriterias = ko.observable(new publicationSearchCriterias());
 
     self.modalTitle = ko.observable();
@@ -30,11 +30,11 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
     });
     self.getJournal();
   }
-  
-  JournalPublicationsViewModel.prototype.onClear = function(fileData){
-    if(confirm('Are you sure?')){
+
+  JournalPublicationsViewModel.prototype.onClear = function (fileData) {
+    if (confirm('Are you sure?')) {
       fileData.clear && fileData.clear();
-    }                            
+    }
   };
 
   /**
@@ -68,7 +68,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
   JournalPublicationsViewModel.prototype.selectJournalPublicationToEdit = function (journalPublication) {
     var self = this;
     self.currentJournalPublication(ko.toJS(journalPublication));//copying to avoid changes directly in the object
-    self.journalPublicationSelected = true;
+    self.journalPublicationSelected(true);
   };
 
   /**
@@ -78,7 +78,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
   JournalPublicationsViewModel.prototype.selectJournalPublicationToDelete = function (journalPublication) {
     var self = this;
     self.currentJournalPublication(journalPublication);
-    self.journalPublicationSelected = true;
+    self.journalPublicationSelected(true);
   };
 
   /**
@@ -86,7 +86,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
    */
   JournalPublicationsViewModel.prototype.saveJournalPublication = function () {
     var self = this;
-    if (!self.journalPublicationSelected) {
+    if (!self.journalPublicationSelected()) {
       var formData = new FormData(document.getElementById('formUpdate'));
       formData.append('journalPublication', ko.toJSON(self.currentJournalPublication()));
       ajaxInterceptor.sendAjax('POST', formData,
@@ -98,9 +98,10 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
         }, null, true);
     } else {
       var idJournalPublication = self.currentJournalPublication().idJournalPublication;
-
-      ajaxInterceptor.sendAjax('PUT', ko.toJSON(self.currentJournalPublication()),
-        'application/json', 'json', 'journalpublication/' + idJournalPublication,
+      var formData = new FormData(document.getElementById('formUpdate'));
+      formData.append('journalPublication', ko.toJSON(self.currentJournalPublication()));
+      ajaxInterceptor.sendAjax('PUT', formData,
+        false, 'json', 'journalpublication/' + idJournalPublication,
         function (updatedJournalPublication) {
           var currentUpdated;
           komapping.fromJS(updatedJournalPublication, self.publicationMappings, currentUpdated);
@@ -108,8 +109,18 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
           self.resetSelection();
           $('#edit').modal('hide');
           self.doSearch();
-        });
+        }, null, true);
     }
+  };
+
+  /**
+   * Method to download the file of the publication selected
+   * @param {JournalPublication} journalPublication
+   */
+  JournalPublicationsViewModel.prototype.downloadJournalPublicationFile = function (journalPublication) {
+    var self = this;
+    ajaxInterceptor.downloadFile('GET', 'journalpublication/pdf/' + journalPublication.idJournalPublication,
+      journalPublication.fileName);
   };
 
   /**
@@ -118,7 +129,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
   JournalPublicationsViewModel.prototype.deleteJournalPublication = function () {
     var self = this;
     var idJournalPublication = self.currentJournalPublication().idJournalPublication;
-    if (self.journalPublicationSelected) {
+    if (self.journalPublicationSelected()) {
 
       ajaxInterceptor.sendAjax('DELETE', null,
         'application/json', 'json', 'journalpublication/' + idJournalPublication,
@@ -158,7 +169,7 @@ define(["knockout", "app/app.config", "app/ajaxInterceptor", "text!./journal-pub
   JournalPublicationsViewModel.prototype.resetSelection = function () {
     var self = this;
     self.currentJournalPublication({});
-    self.journalPublicationSelected = false;
+    self.journalPublicationSelected(false);
     self.fileData().clear && self.fileData().clear();
   };
 

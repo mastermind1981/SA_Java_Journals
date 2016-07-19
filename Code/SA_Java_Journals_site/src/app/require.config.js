@@ -7,6 +7,7 @@ var require = {
 		"hasher": "lib/hasher.min",
 		"crossroads": "lib/crossroads.min",
 		"jquery": "lib/jquery.min",
+		"jquery-binarytransport": "lib/jquery.binarytransport",
 		"knockout": "lib/knockout/knockout.min",
 		"knockout-mapping": "lib/knockout/knockout.mapping.min",
 		"knockout-projections": "lib/knockout/knockout-projections.min",
@@ -19,6 +20,7 @@ var require = {
 	},
 	shim: {
 		"bootstrap": {deps: ["jquery"]},
-		"growl": {deps: ["jquery"]}
+		"growl": {deps: ["jquery"]},
+		"binarytransport": {deps: ["jquery"]}
 	}
 };

@@ -35,10 +35,10 @@
 				<th>Publication Date</th>
 				<th>Description</th>
 				<th>Publisher</th>
-				<th>Download</th>
+				<th class="text-center">Download</th>
 				<!-- ko if: authModel.role() == 'PUBLISHER'  -->
-				<th>Edit</th>
-				<th>Delete</th>
+				<th class="text-center">Edit</th>
+				<th class="text-center">Delete</th>
 				<!-- /ko -->
 			</tr>
 		</thead>
@@ -51,7 +51,10 @@
 				<td class="text-center">
 					<!-- ko if: fileName  -->
 					<p data-placement="top" data-toggle="tooltip" data-bind="attr: {title: 'Download' + fileName}">
-						<a class="btn btn-primary btn-xs" data-bind="attr: {href: '' + $parent.downloadPublicationPath + idJournalPublication}"><span class="glyphicon glyphicon-arrow-down"></span></a>
+						<button type="button" class="btn btn-success btn-xs" data-bind="click: function(data) {$parent.downloadJournalPublicationFile(data);}">
+							<span class="glyphicon glyphicon-arrow-down"></span>
+						</button>
+						<a class="btn btn-primary btn-xs" data-bind="attr: {id: 'file' + idJournalPublication}, visible: false">aaa</a>
 					</p>
 					<!-- /ko -->
 				</td>
@@ -88,12 +91,10 @@
 							<div class="form-group row">
 								<label class="col-md-4 control-label" for="file">Publication's file:</label>
 								<div class="col-md-8">
-									<!-- ko if: $data.fileName && $parent.journalPublicationSelected  -->
-									<label data-bind="text: $data.fileName"></label>
-									<!-- /ko -->
+									<label data-bind="text: $data.fileName, visible: $data.fileName && $parent.journalPublicationSelected"></label>
 									<input type="file" id="file" name="file" required="true" data-bind="fileInput: $parent.fileData, customFileInput: { buttonClass: 'btn btn-success',
 										  fileNameClass: 'disabled form-control',
-										  onClear: $parent.onClear }" accept="application/pdf">
+										  onClear: $parent.onClear }, attr: {required: !$parent.journalPublicationSelected}" accept="application/pdf">
 								</div>
 							</div>
 							<div class="form-group">
