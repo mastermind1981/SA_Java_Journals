@@ -25,6 +25,11 @@ define(["knockout", "knockout-mapping", "shalib", "base64", "app/app.config", "t
     self.loginData().userPassword(hash);
     auth.login(self.loginData, self.oldRoute, self.authModel);
   };
+  
+  HomeViewModel.prototype.doLogout = function () {
+    var self = this;
+     auth.logout(self.authModel);
+  };
 
   return {viewModel: HomeViewModel, template: homeTemplate};
 
