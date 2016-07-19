@@ -103,11 +103,18 @@ public class JournalService {
 	 * Method to update de information of a journal publication
 	 *
 	 * @param journalPublicationValues
+	 * @param fileInputStream
+	 * @param fileName
 	 * @return the updated journal publication
+	 * @throws java.io.IOException
 	 */
-	public JournalPublication updateJournalPublication(JournalPublication journalPublicationValues) {
+	public JournalPublication updateJournalPublication(JournalPublication journalPublicationValues, final InputStream fileInputStream, final String fileName) throws IOException {
 		JournalPublication journalPublication = em.find(JournalPublication.class, journalPublicationValues.getIdJournalPublication());
 		journalPublication.setDescription(journalPublicationValues.getDescription());
+		if (fileInputStream != null && fileName != null && !fileName.trim().isEmpty()) {
+			journalPublication.setFileName(fileName);
+			journalPublication.setContent(toByteArray(fileInputStream));
+		}
 		return journalPublication;
 	}
 

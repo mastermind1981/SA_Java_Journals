@@ -61,8 +61,19 @@ public class JournalPublicationResource {
 
 	@PUT
 	@Path("{id}")
-	public JournalPublication updateJournalPublication(@PathParam("id") Integer id, JournalPublication journalPublication) {
-		return journalServiceBean.updateJournalPublication(journalPublication);
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public JournalPublication updateJournalPublication(@PathParam("id") Integer id,
+			@FormDataParam("file") InputStream fileInputStream,
+			@FormDataParam("file") FormDataContentDisposition cdh,
+			@FormDataParam("journalPublication") FormDataBodyPart journalPublicationJSON) {
+		journalPublicationJSON.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		JournalPublication journalPublication = journalPublicationJSON.getEntityAs(JournalPublication.class);
+		try {
+			return journalServiceBean.updateJournalPublication(journalPublication, fileInputStream, cdh.getFileName());
+		} catch (IOException ex) {
+			LOG.log(Level.SEVERE, null, ex);
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
 	}
 
 	@POST
@@ -132,7 +143,10 @@ public class JournalPublicationResource {
 		JournalPublication journalPublication = journalQueryBean.getJournalPublicationById(id);
 		if (journalPublication != null && journalPublication.getContent() != null && journalPublication.getFileName() != null
 				&& !journalPublication.getFileName().trim().isEmpty()) {
-			ResponseBuilder response = Response.ok(journalPublication.getContent()).header("Content-Disposition", "attachment; filename=\"" + journalPublication.getFileName() + "\"");
+			ResponseBuilder response = Response.ok(journalPublication.getContent())
+					.header("Content-Disposition", "attachment; filename=\"" + journalPublication.getFileName() + "\"")
+					.header("Content-Type", "application/pdf")
+					.header("Content-Transfer-Encoding", "binary");
 			return response.build();
 		} else {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
